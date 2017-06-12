@@ -3,6 +3,8 @@
 #Carlos Llorca 12.06.17
 #
 
+library(ggplot2)
+
 #set wd to read matrices
 setwd("C:/models/munich/data/1.000.75")
 
@@ -14,7 +16,6 @@ iterationsVector = c("50")
 exponentCF = 1
 exponentSF = 0.75
 matrixList = list()
-
 
 for (i in 1:6){
   for (j in 1:1){
@@ -28,11 +29,31 @@ for (i in 1:6){
   }
 }
 
-n = dim(matrixList[[1]])[1]
-randomOrigins = sample(1:n,10,replace=F) 
+setwd("C:/projects/MATSim/scaling/analysis/ttODPairs")
 
+nZones = dim(matrixList[[1]])[1]
+randomOrigins = sample(1:nZones,20,replace=F) 
+
+nDest = 15
 for (origin in randomOrigins){
+  tts = data.frame()
+  #ttSubmatrix = matrix(nrow = nDest, ncol=6)
+  randomDestinations = sample(1:nZones,nDest,replace=F) 
+  for (i in 1:length(randomDestinations)){
+    #i is the destination / row
+    for (j in 1:6){
+      #j is the scalingFactor / column
+      row = data.frame(orig = origin, scaling = scalingVector[j], dest = randomDestinations[i], tt=matrixList[[j]][origin,randomDestinations[i]])
+      tts = rbind(tts,row)
+    }
+  }
+  print(ggplot(tts, aes(x=as.factor(dest), y=tt, color=scaling, group = scaling)) + geom_line()  + geom_point()+ 
+          xlab("destination") +  ylab("travelTime"))
   
+    
 }
+
+
+
 
 

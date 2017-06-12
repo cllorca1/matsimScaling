@@ -1,17 +1,18 @@
 {
     "collab_server" : "",
-    "contents" : "#\n#compare travel times using different scaling factors\n#Carlos Llorca 12.06.17\n#\n\n#set wd to read matrices\nsetwd(\"C:/models/munich/data/1.000.75\")\n\n#read matrices\nsource(\"C:/code/omx/api/r/omx.R\")\n\nscalingVector = c(\"0.01\",\"0.05\",\"0.10\", \"0.20\", \"0.50\", \"1.00\")\niterationsVector = c(\"50\")\nexponentCF = 1\nexponentSF = 0.75\nmatrixList = list()\n\n\nfor (i in 1:6){\n  for (j in 1:1){\n    scaling = scalingVector[i]\n    iterations = iterationsVector[j]\n    capacity = paste(format(round(as.numeric(scaling)^as.numeric(exponentCF),2),nsmall = 2))\n    storage = paste(format(round(as.numeric(scaling)^as.numeric(exponentSF),2),nsmall = 2))\n    simulationName = paste(\"TF\",scaling,\"CF\",capacity,\"SF\",storage,\"IT\",iterations,\"scalingSFExp\",exponentSF,\"CFExp\",exponentCF, \"TEST\", sep = \"\")\n    fileName = paste(\"tt\" , simulationName,\".omx\", sep =\"\")\n    matrixList[[i]] = readMatrixOMX(fileName, \"mat1\")\n  }\n}\n\nn = dim(matrixList[[1]])[1]\nrandomOrigins = sample(1:n,10,replace=F) \n\nfor (origin in randomOrigins){\n  \n}\n\n\n",
+    "contents" : "#\n#compare travel times using different scaling factors\n#Carlos Llorca 12.06.17\n#\n\nlibrary(ggplot2)\n\n#set wd to read matrices\nsetwd(\"C:/models/munich/data/1.000.75\")\n\n#read matrices\nsource(\"C:/code/omx/api/r/omx.R\")\n\nscalingVector = c(\"0.01\",\"0.05\",\"0.10\", \"0.20\", \"0.50\", \"1.00\")\niterationsVector = c(\"50\")\nexponentCF = 1\nexponentSF = 0.75\nmatrixList = list()\n\nfor (i in 1:6){\n  for (j in 1:1){\n    scaling = scalingVector[i]\n    iterations = iterationsVector[j]\n    capacity = paste(format(round(as.numeric(scaling)^as.numeric(exponentCF),2),nsmall = 2))\n    storage = paste(format(round(as.numeric(scaling)^as.numeric(exponentSF),2),nsmall = 2))\n    simulationName = paste(\"TF\",scaling,\"CF\",capacity,\"SF\",storage,\"IT\",iterations,\"scalingSFExp\",exponentSF,\"CFExp\",exponentCF, \"TEST\", sep = \"\")\n    fileName = paste(\"tt\" , simulationName,\".omx\", sep =\"\")\n    matrixList[[i]] = readMatrixOMX(fileName, \"mat1\")\n  }\n}\n\nsetwd(\"C:/projects/MATSim/scaling/analysis/ttODPairs\")\n\nnZones = dim(matrixList[[1]])[1]\nrandomOrigins = sample(1:nZones,20,replace=F) \n\nnDest = 15\nfor (origin in randomOrigins){\n  tts = data.frame()\n  #ttSubmatrix = matrix(nrow = nDest, ncol=6)\n  randomDestinations = sample(1:nZones,nDest,replace=F) \n  for (i in 1:length(randomDestinations)){\n    #i is the destination / row\n    for (j in 1:6){\n      #j is the scalingFactor / column\n      row = data.frame(orig = origin, scaling = scalingVector[j], dest = randomDestinations[i], tt=matrixList[[j]][origin,randomDestinations[i]])\n      tts = rbind(tts,row)\n    }\n  }\n  print(ggplot(tts, aes(x=as.factor(dest), y=tt, color=scaling, group = scaling)) + geom_line()  + geom_point()+ \n          xlab(\"destination\") +  ylab(\"travelTime\"))\n  \n    \n}\n\n\n\n\n\n",
     "created" : 1497258598586.000,
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "631039298",
+    "hash" : "1399702866",
     "id" : "874A0EEE",
-    "lastKnownWriteTime" : 1497259756,
-    "last_content_update" : 1497259756995,
+    "lastKnownWriteTime" : 1497262014,
+    "last_content_update" : 1497262014599,
     "path" : "C:/code/matsimScaling/ttMatrix/compareTt.R",
     "project_path" : "ttMatrix/compareTt.R",
     "properties" : {
+        "notebook_format" : "html_document",
         "tempName" : "Untitled1"
     },
     "relative_order" : 1,
