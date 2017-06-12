@@ -29,12 +29,16 @@ for (i in 1:6){
   }
 }
 
+#compare a set of origin-destination alternatives
+
 setwd("C:/projects/MATSim/scaling/analysis/ttODPairs")
 
 nZones = dim(matrixList[[1]])[1]
-randomOrigins = sample(1:nZones,20,replace=F) 
-
+nOrig = 20
+randomOrigins = sample(1:nZones,nOrig,replace=F) 
 nDest = 15
+plot = T
+
 for (origin in randomOrigins){
   tts = data.frame()
   #ttSubmatrix = matrix(nrow = nDest, ncol=6)
@@ -47,13 +51,20 @@ for (origin in randomOrigins){
       tts = rbind(tts,row)
     }
   }
-  print(ggplot(tts, aes(x=as.factor(dest), y=tt, color=scaling, group = scaling)) + geom_line()  + geom_point()+ 
+  if(plot){
+    print(ggplot(tts, aes(x=as.factor(dest), y=tt, color=scaling, group = scaling)) + geom_line()  + geom_point()+ 
           xlab("destination") +  ylab("travelTime"))
-  
+  }
     
 }
 
+#compare whole matrices
 
+ratio1 =  - matrixList[[1]] + matrixList[[6]]
+ratio5 =  - matrixList[[2]] + matrixList[[6]]
+ratio10 = - matrixList[[3]] + matrixList[[6]]
+ratio20 = - matrixList[[4]] + matrixList[[6]]
+ratio50 = - matrixList[[5]] + matrixList[[6]]
 
-
-
+max(ratio10)
+min(ratio10)
