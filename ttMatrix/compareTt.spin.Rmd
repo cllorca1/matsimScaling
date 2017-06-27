@@ -1,3 +1,5 @@
+
+```{r }
 #
 #compare travel times using different scaling factors
 #Carlos Llorca 12.06.17
@@ -109,4 +111,11 @@ sum(dif5$value^2)
 sum(dif10$value^2)
 sum(dif20$value^2)
 sum(dif50$value^2)
+```
 
+
+---
+title: "compareTt.R"
+author: "carlloga"
+date: "Tue Jun 27 15:23:35 2017"
+---
