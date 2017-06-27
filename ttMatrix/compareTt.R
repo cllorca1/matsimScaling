@@ -51,9 +51,9 @@ for (i in 1:6){
 setwd("C:/projects/MATSim/scaling/analysis/ttODPairs")
 
 nZones = dim(matrixList[[1]])[1]
-nOrig = 5
+nOrig = 10
 randomOrigins = sample(1:nZones,nOrig,replace=F) 
-nDest = 15
+nDest = 20
 plot = T
 
 for (origin in randomOrigins){
@@ -109,4 +109,15 @@ sum(dif5$value^2)/nrow(dif1)
 sum(dif10$value^2)/nrow(dif1)
 sum(dif20$value^2)/nrow(dif1)
 sum(dif50$value^2)/nrow(dif1)
+
+#plot all the errors
+setwd("C:/projects/MATSim/scaling/analysis/ttODPairs")
+png("dif1.png")
+image((- matrixList[[1]] + matrixList[[6]]), axes = T, useRaster = T, col = rainbow(7))
+dev.off()
+
+png("dif50.png")
+image((- matrixList[[5]] + matrixList[[6]]), axes = T, useRaster = T, col = rainbow(7))
+dev.off()
+
 
