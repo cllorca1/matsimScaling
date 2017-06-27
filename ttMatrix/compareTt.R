@@ -91,11 +91,11 @@ dif10 =  melt(as.data.frame(- matrixList[[3]] + matrixList[[6]]),measure.vars = 
 dif20 =  melt(as.data.frame(- matrixList[[4]] + matrixList[[6]]),measure.vars = 1:4953)
 dif50 =  melt(as.data.frame(- matrixList[[5]] + matrixList[[6]]),measure.vars = 1:4953)
 
-sum(dif1$value^2)
-sum(dif5$value^2)
-sum(dif10$value^2)
-sum(dif20$value^2)
-sum(dif50$value^2)
+sum(dif1$value^2)/nrow(dif1)
+sum(dif5$value^2)/nrow(dif1)
+sum(dif10$value^2)/nrow(dif1)
+sum(dif20$value^2)/nrow(dif1)
+sum(dif50$value^2)/nrow(dif1)
 
 
 dif1 =   melt(as.data.frame(- matrixList[[7]] + matrixList[[12]]),measure.vars = 1:4953)
@@ -104,9 +104,9 @@ dif10 =  melt(as.data.frame(- matrixList[[9]] + matrixList[[12]]),measure.vars =
 dif20 =  melt(as.data.frame(- matrixList[[10]] + matrixList[[12]]),measure.vars = 1:4953)
 dif50 =  melt(as.data.frame(- matrixList[[11]] + matrixList[[12]]),measure.vars = 1:4953)
 
-sum(dif1$value^2)
-sum(dif5$value^2)
-sum(dif10$value^2)
-sum(dif20$value^2)
-sum(dif50$value^2)
+sum(dif1$value^2)/nrow(dif1)
+sum(dif5$value^2)/nrow(dif1)
+sum(dif10$value^2)/nrow(dif1)
+sum(dif20$value^2)/nrow(dif1)
+sum(dif50$value^2)/nrow(dif1)
 
