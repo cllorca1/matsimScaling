@@ -83,7 +83,7 @@ for (origin in randomOrigins){
     
 }
 
-#compare whole matrices
+#compare whole matrices - COMPLETE SAMPLE IS THE REFERENCE
 
 dif1 =   melt(as.data.frame(- matrixList[[1]] + matrixList[[6]]),measure.vars = 1:4953)
 dif5 =   melt(as.data.frame(- matrixList[[2]] + matrixList[[6]]),measure.vars = 1:4953)
@@ -110,14 +110,15 @@ sum(dif10$value^2)/nrow(dif1)
 sum(dif20$value^2)/nrow(dif1)
 sum(dif50$value^2)/nrow(dif1)
 
-#plot all the errors
-setwd("C:/projects/MATSim/scaling/analysis/ttODPairs")
-png("dif1.png")
-image((- matrixList[[1]] + matrixList[[6]]), axes = T, useRaster = T, col = rainbow(7))
-dev.off()
-
-png("dif50.png")
-image((- matrixList[[5]] + matrixList[[6]]), axes = T, useRaster = T, col = rainbow(7))
-dev.off()
+#plot all the errors // TEST ONLY
+# setwd("C:/projects/MATSim/scaling/analysis/ttODPairs")
+# 
+# png("dif1.png")
+# image((- matrixList[[1]] + matrixList[[6]]), axes = T, useRaster = T, col = rainbow(5))
+# dev.off()
+# 
+# png("dif50.png")
+# image((- matrixList[[5]] + matrixList[[6]]), axes = T, useRaster = T, col = rainbow(5))
+# dev.off()
 
 
