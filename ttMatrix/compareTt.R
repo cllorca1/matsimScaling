@@ -181,14 +181,29 @@ ggplot(difsLong,aes(x=value, fill=variable, color=variable)) + stat_density(alph
 #compare across networks given the same number of agents
 
 
-scalingFactorOrder = 6
 
+difAllAll = data.frame()
+selectedRows = sample(1:totalRows,10000,replace=F) 
+
+for (scalingFactorOrder in 1:6){
 tt1s = melt(as.data.frame(matrixList[[scalingFactorOrder]]),measure.vars = 1:4953)
 tt1f = melt(as.data.frame(matrixList[[scalingFactorOrder+1]]),measure.vars = 1:4953)
 
 totalRows = 4953^2
 dif1All = data.frame(id = c(1:totalRows), simple = tt1s$value, full = tt1f$value)
-selectedRows = sample(1:totalRows,10000,replace=F) 
 dif1All = subset(dif1All, id %in% selectedRows)
+dif1All$scale = scalingVector[scalingFactorOrder]
 
-ggplot(dif1All,aes(x=simple, y=full)) + geom_point() + geom_abline(slope=1, intercept = 0, color = "blue")
+print(
+  ggplot(dif1All,aes(x=simple, y=full, color=scale)) + geom_point() + geom_abline(slope=1, intercept = 0, color = "blue") + 
+  xlim(0,130) + ylim(0,130)
+)
+
+difAllAll = rbind(difAllAll, dif1All)
+}
+
+
+ggplot(difAllAll,aes(x=simple-full, color = scale, fill=scale)) +
+  stat_density(alpha = 0.1) + 
+  xlim(-10,10)
+
