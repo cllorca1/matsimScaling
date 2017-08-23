@@ -52,37 +52,69 @@ for (i in 1:6){
 setwd("C:/projects/MATSim/scaling/analysis/ttODPairs")
 
 nZones = dim(matrixList[[1]])[1]
-nOrig = 10
+nOrig = 500
 randomOrigins = sample(1:nZones,nOrig,replace=F) 
-nDest = 20
-plot = T
+nDest = 10
+plot = F
 
+
+tts = data.frame()
+count = 0
 for (origin in randomOrigins){
-  tts = data.frame()
-  #ttSubmatrix = matrix(nrow = nDest, ncol=6)
+   #ttSubmatrix = matrix(nrow = nDest, ncol=6)
+  ttsOrigin = data.frame()
   randomDestinations = sample(1:nZones,nDest,replace=F) 
   for (i in 1:length(randomDestinations)){
+    #print(paste("from",origin,"to",randomDestinations[i],sep=" "))
+    count = count + 1
+    print(count)
     #i is the destination / row
     for (j in 1:6){
       #j is the scalingFactor / column
-      row = data.frame(network = as.factor("simple"), orig = origin, scaling = scalingVector[j], dest = randomDestinations[i], tt=matrixList[[j]][origin,randomDestinations[i]])
-      tts = rbind(tts,row)
+      row = data.frame(network = as.factor("simple"), orig = origin, scaling = scalingVector[j], destIndex = i, dest = randomDestinations[i], tt=matrixList[[j]][origin,randomDestinations[i]])
+      ttsOrigin = rbind(ttsOrigin,row)
     }
     for (j in 1:6){
       #j is the scalingFactor / column
-      row = data.frame(network = as.factor("full"), orig = origin, scaling = scalingVector[j], dest = randomDestinations[i], tt=matrixList[[6+j]][origin,randomDestinations[i]])
-      tts = rbind(tts,row)
+      row = data.frame(network = as.factor("full"), orig = origin, scaling = scalingVector[j], destIndex = i, dest = randomDestinations[i], tt=matrixList[[6+j]][origin,randomDestinations[i]])
+      ttsOrigin = rbind(ttsOrigin,row)
     }
   }
   if(plot){
-    print(ggplot(subset(tts,network == "simple"), aes(x=as.factor(dest), y=tt, color=scaling, group = scaling)) + geom_line()  + geom_point()+ 
+    print(ggplot(subset(ttsOrigin,network == "simple"), aes(x=as.factor(dest), y=tt, color=scaling, group = scaling)) + geom_line()  + geom_point()+ 
           xlab("destination") +  ylab("travelTime") + ggtitle(label = "simple"))
-    print(ggplot(subset(tts,network == "full"), aes(x=as.factor(dest), y=tt, color=scaling, group = scaling)) + geom_line()  + geom_point()+ 
+    print(ggplot(subset(ttsOrigin,network == "full"), aes(x=as.factor(dest), y=tt, color=scaling, group = scaling)) + geom_line()  + geom_point()+ 
             xlab("destination") +  ylab("travelTime")+ ggtitle(label = "full"))
     
   }
-    
+  tts = rbind(tts,ttsOrigin)
+
 }
+
+ttsSpread = tts %>% group_by(network, scaling, orig, destIndex) %>% summarize(utility = 100*exp(-0.1*mean(tt))) %>% tidyr::spread(destIndex,utility,sep=".")
+
+estimate_mode <- function(x) {
+  d <- unique(x)
+  d[which.max(tabulate(match(x,d)))]
+}
+
+ttsSpread$selectedDest = 0
+
+for(choice in 1:nrow(ttsSpread)){
+  print(choice)
+  lastIndex = 3 + nDest
+  utilities = ttsSpread[choice,4:lastIndex]
+  ttsSpread$selectedDest[choice]= estimate_mode(sample(replace = T,prob = utilities, x=seq(1,nDest),size=1000))
+
+}
+
+summary = ttsSpread %>% group_by(network, scaling, orig) %>% summarize(choice = mean(selectedDest)) %>% tidyr::spread(scaling,choice,sep=".")
+
+setwd("C:/projects/MATSim/scaling/analysis/ttODPairs")
+
+write.csv(summary, "summaryChoices.csv")
+
+
 
 #compare whole matrices - COMPLETE SAMPLE IS THE REFERENCE
 
