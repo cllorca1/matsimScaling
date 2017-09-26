@@ -54,7 +54,7 @@ setwd("C:/projects/MATSim/scaling/analysis/ttODPairs")
 nZones = dim(matrixList[[1]])[1]
 nOrig = 500
 randomOrigins = sample(1:nZones,nOrig,replace=F) 
-nDest = 10
+nDest = 30
 plot = F
 
 
