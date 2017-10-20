@@ -49,25 +49,38 @@ for (line in lines) {
     
     sbbox <- make_bbox(lon = lineData$lon, lat = lineData$lat, f = .1)
 
+      #   tryCatch(
+      #     expr = {
+      #     #with map  
+      #       sq_map <- get_map(location = sbbox, source = "google", maptype = "satellite", color = "bw")
+      #       print(
+      #       ggmap(sq_map) + geom_point(color = "red", data = lineData, aes(x=lon, y=lat)) +
+      #         geom_path(color = "red", data = lineData, aes(x=lon, y=lat))+
+      #         xlim(sbbox[[1]], sbbox[[3]]) + ylim(sbbox[[2]], sbbox[[4]]) +
+      #       ggtitle(paste ("map",line,lineName, sep = "-")) + geom_text(size = 6, color = 'blue', data = lineData, aes(x=lon, y=lat , label=seq))
+      #             )
+      #     }, error = {
+      #     #without map        
+      #       print (
+      #       ggplot() + geom_point(color = "red", data = lineData, aes(x=lon, y=lat)) +
+      #         geom_path(color = "red", data = lineData, aes(x=lon, y=lat))+
+      #         xlim(sbbox[[1]], sbbox[[3]]) + ylim(sbbox[[2]], sbbox[[4]]) +
+      #         ggtitle(paste ("map",line,lineName, sep = "-")) +
+      #         geom_text(size = 6, color = 'blue', data = lineData, aes(x=lon, y=lat , label=seq)) + 
+      #         coord_fixed(ratio = 1)
+      #           )
+      #     }
+      # )
     
-      # sq_map <- get_map(location = sbbox, source = "google", maptype = "satellite", color = "bw")
-      #   print(
-      #   ggmap(sq_map) + geom_point(color = "red", data = lineData, aes(x=lon, y=lat)) + 
-      #     geom_path(color = "red", data = lineData, aes(x=lon, y=lat))+
-      #     xlim(sbbox[[1]], sbbox[[3]]) + ylim(sbbox[[2]], sbbox[[4]]) +
-      #     ggtitle(paste ("map",line,lineName, sep = "-")) + geom_text(size = 6, color = 'blue', data = lineData, aes(x=lon, y=lat , label=seq)) 
-      #   )
-        
-        print (
-          ggplot() + geom_point(color = "red", data = lineData, aes(x=lon, y=lat)) + 
-          geom_path(color = "red", data = lineData, aes(x=lon, y=lat))+
-          xlim(sbbox[[1]], sbbox[[3]]) + ylim(sbbox[[2]], sbbox[[4]]) +
-          ggtitle(paste ("map",line,lineName, sep = "-")) + geom_text(size = 6, color = 'blue', data = lineData, aes(x=lon, y=lat , label=seq)) 
-        )
-      
-    
-    
-    
+        #without map
+          print (
+          ggplot() + geom_point(color = "red", data = lineData, aes(x=lon, y=lat)) +
+            geom_path(color = "red", data = lineData, aes(x=lon, y=lat))+
+            xlim(sbbox[[1]], sbbox[[3]]) + ylim(sbbox[[2]], sbbox[[4]]) +
+            ggtitle(paste ("map",line,lineName, sep = "-")) +
+            geom_text(size = 6, color = 'blue', data = lineData, aes(x=lon, y=lat , label=seq)) +
+            coord_fixed(ratio = 1)
+              )
   }
   
 }
