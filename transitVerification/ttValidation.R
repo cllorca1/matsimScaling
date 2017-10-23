@@ -57,7 +57,7 @@ getCoord = function(zoneId){
 #test the travel times
 
 #define the size of the matrix
-n = 20
+n = 30
 
 origins = sample(x = zones$id, size = n, replace = F)
 destinations = sample(x = zones$id, size = n, replace = F)
@@ -72,7 +72,7 @@ for (i in 1:n){
   for (j in 1:n){
     col = destinations[j]
     
-      googleResult = drive_time(address = originCoordinates[[i]], dest = destCoordinates[[j]], 
+    googleResult = drive_time(address = originCoordinates[[i]], dest = destCoordinates[[j]], 
                               auth = "standard_api", privkey = apiKey,
                               clean = FALSE, travel_mode = "transit", 
                               verbose = TRUE, add_date = "fuzzy")
@@ -89,10 +89,10 @@ for (i in 1:n){
 
 outputFileName = "C:/projects/MATSim/Transit Munich/dataValidation/outputTripsMunichOnlyCenter.csv"
 
-write.csv(x = results, file = outputFileName )
+write.csv(x = results, file = outputFileName)
 
 ggplot(data = results, aes(x=time_mins, y=tt)) + geom_point() + geom_abline(slope = 1, color = "red") +
-  xlab("googleTT (min)") + ylab("MATSim TT (min)") + xlim(0,100) + ylim(0,100)
+  xlab("googleTT (min)") + ylab("MATSim TT (min)") + xlim(0,50) + ylim(0,50)
 
 ggplot(data = results, aes(x=time_mins, y=access + inVehicle + eggress)) + geom_point() + geom_abline(slope = 1, color = "red") +
   xlab("googleTT (min)") + ylab("MATSim TT (min)") + xlim(0,100) + ylim(0,100)
