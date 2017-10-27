@@ -1,8 +1,8 @@
 setwd("C:/models/silo/muc/microData")
 
-install.packages("data.table")
-install.packages("dplyr")
-install.packages("ggplot2")
+# install.packages("data.table")
+# install.packages("dplyr")
+# install.packages("ggplot2")
 
 
 library(data.table)
@@ -67,8 +67,13 @@ zones = read.csv(fileNameZones)
 #plot jobs by location
 
 
+counties = unique(zones$ID_county)
+
+
+for (county in counties){
+
 #filter to Munich == 9162  (if Ausgburg just change to 9772, otherwise look at zone data frame)
-zonesMunich = zones %>% filter (ID_county == 9162)
+zonesMunich = zones %>% filter (ID_county == county)
 inMunich = zonesMunich$Zone
 
 
@@ -97,8 +102,10 @@ list50$year = 50
 list = rbind(list11, list50)
 
 #plot
-ggplot(list, aes(x=as.factor(JUR_NAME), y=workers,group = year, color = as.factor(year))) +
+print(ggplot(list, aes(x=as.factor(JUR_NAME), y=workers,group = year, color = as.factor(year))) +
   geom_path() +  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +
-  ggtitle("home location of Rosenheim workers (uses MATSim)") + 
+  ggtitle(paste("home location of workers of ",county,sep="")) + 
   scale_y_continuous(labels = scales::comma)
+)
+}
 
