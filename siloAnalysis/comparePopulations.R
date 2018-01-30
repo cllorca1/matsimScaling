@@ -13,6 +13,7 @@ library(ggplot2)
 pp11 = fread("pp_2011.csv")
 jj11 = fread("jj_2011.csv")
 
+
 #filter to workers
 pp11 = pp11 %>% filter(workplace>0)
 
@@ -25,8 +26,15 @@ ppjj11 = merge(pp11, jj11, by="jobMergeId")
 #store workZone in the right field
 ppjj11$workZone = ppjj11$zone
 
+#check if there is only one worker or more than one in the hh
+workersByhh11 = ppjj11 %>% group_by (hhid) %>% summarize (hhworkers = n())
+
+#and assign this value to the ppjj11 table
+ppjj11 = merge(ppjj11, workersByhh11, by="hhid")
+
+
 #select only what need for comparison
-ppjj11  = ppjj11 %>% select(homeZone, workZone, id.x) 
+ppjj11  = ppjj11 %>% select(homeZone, workZone, id.x, hhworkers) 
 
 
 #read 2050 files
@@ -56,8 +64,16 @@ ppjjhh50 = merge(ppjj50, hh50, by = "hhMergeId")
 #store homeZone in the right place
 ppjjhh50$homeZone = ppjjhh50$zone.y
 
+
+#check if there is only one worker or more than one in the hh
+workersByhh50 = ppjjhh50 %>% group_by (hhID) %>% summarize (hhworkers = n())
+
+#and assign this value to the ppjj11 table
+ppjjhh50 = merge(ppjjhh50, workersByhh50, by="hhID")
+
+
 #select the useful columns only
-ppjjhh50  = ppjjhh50 %>% select(homeZone, workZone, id.x) 
+ppjjhh50  = ppjjhh50 %>% select(homeZone, workZone, id.x, hhworkers) 
 
 
 #read zonal data
@@ -69,6 +85,11 @@ zones = read.csv(fileNameZones)
 
 counties = unique(zones$ID_county)
 
+
+#analyze 1-worker-hh
+
+print(nrow(ppjj11))
+print(nrow(ppjjhh50))
 
 for (county in counties){
 
@@ -100,6 +121,10 @@ list50$year = 50
 
 #join years
 list = rbind(list11, list50)
+
+
+
+
 
 #plot
 print(ggplot(list, aes(x=as.factor(JUR_NAME), y=workers,group = year, color = as.factor(year))) +

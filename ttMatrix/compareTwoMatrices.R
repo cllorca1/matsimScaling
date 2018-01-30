@@ -33,6 +33,33 @@ file2 = "tdTest.omx"
 data = compareMatrices(file1, file2, 100, 150000)
 
 
+#matrices for transit with and without 2SS
+setwd("C:/models/munich/data/2ss_before_after")
+
+#matrix filenames for congested and uncongested
+fileName1 = "ttTransitTotaltest2SSafterComplete.omx"
+fileName2 = "ttTransitTotaltest2SSbeforeComplete.omx"
+
+compareMatrices(fileName1, fileName2, 200, 9999)
+
+
+
+#matrices for transit with and without 2SS
+
+
+#matrix filenames for congested and uncongested
+fileName1 = "tdEuc.omx"
+fileName2 = "tdTest.omx"
+
+data = compareMatrices(fileName1, fileName2, 200, 50000)
+
+ggplot(data, aes(x=value2)) + stat_ecdf()
+
+
+listOMX(file2)
+
+
+
 
 
 compareMatrices = function(fileName1, fileName2, n, threshold){
@@ -55,9 +82,11 @@ compareMatrices = function(fileName1, fileName2, n, threshold){
     for (destination in randomDestinations){
       tC = ttCongested[origin, destination]
       tU = ttUncongested[origin, destination]
-      if (tC < threshold){
-        newData = data.frame(origin = origin, destination = destination, value1 = tC, value2 = tU)
-        data = rbind(data, newData)
+      if (!is.na(tC) & !is.na(tU)){
+        if (tC < threshold){
+          newData = data.frame(origin = origin, destination = destination, value1 = tC, value2 = tU)
+          data = rbind(data, newData)
+        }
       }
     }
     print(paste("origin:",counter, sep = " "))
