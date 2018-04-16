@@ -3,7 +3,6 @@
 #Carlos Llorca 19.10.17
 #
 
-
 library(placement)
 library(ggplot2)
 

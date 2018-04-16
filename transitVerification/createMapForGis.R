@@ -2,7 +2,7 @@
 #plot the map line based on stop and line csv files
 #
 
-setwd("c://models/transit")
+setwd("c:/models/transit")
 
 
 lines = read.csv("input/allFinal/linesV3.csv", sep = ";", dec = ".")
@@ -18,4 +18,4 @@ for (row in 1:nrow(lines)){
 }
 
 write.csv(x=lines, file = "input/lineFrequency/linesWithCoordinates.csv")
-subset(lines, lineId == 156578 )
+#subset(lines, lineId == 156578 )
