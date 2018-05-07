@@ -13,6 +13,9 @@ jj11 = fread("jj_2011.csv")
 hh11 = fread("hh_2011.csv")
 dd11 = fread("dd_2011.csv")
 
+numberOfMarriedByHh = pp11 %>% filter(relationShip == "married") %>%  group_by(hhid) %>% summarize(count = n())
+summary(as.factor(numberOfMarriedByHh$count))
+
 
 vacant_dd11 = dd11 %>% filter(hhID == -1)
 vacant_jj11 = jj11 %>% filter(personId == -1)
