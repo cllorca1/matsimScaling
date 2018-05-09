@@ -27,7 +27,7 @@ for (scale in scales){
   #for(replication in 1:10){
     
     runName = paste("scale",scale,"replication",replication,sep="")
-    folder = "c:/models/simpleMatsimModel/output/withHoles/"
+    folder = "c:/models/simpleMatsimModel/output/withHoles0.75/"
     fileEnding = ".csv"
     data = fread(paste(folder,link,runName,"/",runName,fileEnding, sep = ""))
     

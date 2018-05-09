@@ -6,10 +6,27 @@ setwd("C:/projects/MATSim/scaling/analysis/links")
 #Analyze network link characteristics (static)
 linksTable = read.csv("networkMap/linksList.csv")
 
+setwd("C:/projects/MATSim/scaling/analysis/links")
+linksTableFull = fread("scalingSFExp0.75CFExp1TEST_2016.50.linkstats.txt")
+
 #ggplot(linksTable, aes(x=LENGTH))+stat_ecdf()
 #ggplot(linksTable, aes(x=LANES))+stat_ecdf()
 ggplot(linksTable, aes(x=CAPACITY))+stat_ecdf() + xlim(0,10000)
 ggplot(linksTable, aes(x=FRSPEED))+stat_ecdf()
+
+ggplot(linksTable, aes(x=LENGTH))+stat_ecdf() +
+  geom_vline(xintercept = 100) + 
+  geom_vline(xintercept = 500) +
+  geom_vline(xintercept = 1000)+
+  geom_vline(xintercept = 5000)
+
+bins = c(0,100,500,1000,5000,50000)
+linksTable$l_bin = cut(linksTable$LENGTH, breaks = bins)
+linksTableFull$l_bin = cut(linksTableFull$LENGTH, breaks = bins)
+
+linksTable %>% group_by(l_bin) %>% summarize(length = sum(LENGTH), count = n())
+linksTableFull %>% group_by(l_bin) %>% summarize(length = sum(LENGTH), count = n())
+
 
 linksTable$capacityCut = cut(linksTable$CAPACITY,
                              breaks = c(-Inf,1250,2500,3750,5000,6125,7500,8750,10000,Inf),
@@ -77,7 +94,7 @@ listOfLinkNames = routeTable$order
 
 listOfLinks = c(56921, 7777, 22549, 67260,49001,114344,66950)
 listOfLinks = c(108899, 107460, 33532, 67260,49001,6060,70732) #alternative
-listOfLinkNames = c("A99ring", "Scheleiﬂheimerstr,", "Dachauerstr.", "St2063 am Starnberg See","local road in Ellgau","Arcisstr.","A8 Augsburg - MUC")
+listOfLinkNames = c("A99ring", "Schelei?heimerstr,", "Dachauerstr.", "St2063 am Starnberg See","local road in Ellgau","Arcisstr.","A8 Augsburg - MUC")
 
 
 

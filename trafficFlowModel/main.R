@@ -68,10 +68,32 @@ plot = ggplot(summary %>% filter(scale != 20, scale != 100), aes(x=as.numeric(ti
 
 print(plot)
 
+global_summary = summary %>% group_by(scale, length, capacity) %>%
+  summarize(tt_rel_error = mean((travelTime - tt_ref)/tt_ref), 
+            veh_rel_error = mean((vehicles/scale * 100 - vehicles_ref) / vehicles_ref)) 
+
+global_summary$length = as.numeric(global_summary$length)
+
+labs = c("L = 100 m", "L = 500 m", "L = 1,000 m", "L = 5,000 m","L = 50,000 m" )
+names(labs) = c(100,500,1000,5000,50000)
 
 
-# ggplot(summary, aes(x=scale, y=sqrt((tt - tt_ref)^2/6)/tt_ref , color = as.factor(length))) +
-  # geom_path() + geom_point() + xlab("scale") + ylab("travel time relative error")
+ggplot(global_summary, aes(x=scale, y= 100 * tt_rel_error,
+                           color = as.factor(2*as.numeric(capacity)))) +
+  geom_point(size = 1) +
+  geom_path(size = 0.5) + 
+  facet_grid(.~length, labeller = labeller(length = labs)) +
+  scale_x_log10() +
+  xlab("Scaling factor (%) (log-scale)") + 
+  ylab("Relative error of travel time \n respect of 100% simulation (%)") +
+  theme_bw() + theme(legend.position = "bottom") + labs(color = "Link capacity (veh/h)")
 
-
+ggplot(global_summary, aes(x=scale, y= 100 * veh_rel_error,
+                           color = as.factor(as.numeric(capacity))))+
+  geom_point(size = 1) +
+  geom_path(size  = 1) + 
+  facet_grid(.~length) + scale_x_log10() + 
+  xlab("Scaling factor (%) (log-scale)") + 
+  ylab("Relative error in the number of vehicles in the link \n respect of 100% simulation (%)") +
+  theme_bw()
 
