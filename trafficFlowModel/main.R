@@ -5,7 +5,7 @@ link_lengths = c("50000.0","5000.0","1000.0","500.0","100.0")
 
 
 link_capacities = c("500.0","1000.0")
-link_lengths = c("1000.0","5000.0")
+link_lengths = c("100.0","1000.0")
 simulationNames = c("withHoles","withHoles0.95","withHoles0.90","withHoles0.85", "withHoles0.75")
 
 source("c:/code/matsimScaling/trafficFlowModel/analyzeTrafficFlowSimpleModel.R")
@@ -17,15 +17,15 @@ summary = data.frame()
 
 for (link_length in link_lengths){
   for (capacity in link_capacities){
-  folder = paste("C=",capacity,"/L=",link_length,"/",sep = "")
-    run_data = analyzeLenght(folder,simulationName, as.numeric(link_length),60,50000)
-  # tt_ref = (run_data %>% filter(scale == 100) %>% select(tt))$tt
-  # run_data$tt_ref = tt_ref
-  # speed_ref = (run_data %>% filter(scale == 100) %>% select(speed))$speed
-  # run_data$speed_ref = speed_ref
-  run_data$length = link_length
-  run_data$capacity = capacity
-  summary = rbind(as.data.frame(run_data), as.data.frame(summary))
+    folder = paste("C=",capacity,"/L=",link_length,"/",sep = "")
+    try(run_data = analyzeLenght(folder,simulationName, as.numeric(link_length),60,50000))
+    # tt_ref = (run_data %>% filter(scale == 100) %>% select(tt))$tt
+    # run_data$tt_ref = tt_ref
+    # speed_ref = (run_data %>% filter(scale == 100) %>% select(speed))$speed
+    # run_data$speed_ref = speed_ref
+    try( run_data$length = link_length)
+    try(run_data$capacity = capacity)
+    try(summary = rbind(as.data.frame(run_data), as.data.frame(summary)))
   }
 }
 
@@ -82,7 +82,6 @@ global_summary$exponent = simulationName
 all = rbind(as.data.frame(all),as.data.frame(global_summary))
 
 }
-
 
 labs = c("L = 100 m", "L = 500 m", "L = 1,000 m", "L = 5,000 m","L = 50,000 m" )
 names(labs) = c(100,500,1000,5000,50000)
