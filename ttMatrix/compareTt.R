@@ -7,9 +7,6 @@ library(ggplot2)
 library(reshape2)
 library(dplyr)
 
-#set wd to read matrices
-setwd("C:/models/munich/data/1.000.75")
-
 #read matrices
 source("C:/code/omx/api/r/omx.R")
 
@@ -17,10 +14,11 @@ scalingVector = c("0.01","0.05","0.10", "0.20", "0.50", "1.00")
 iterationsVector = c("50")
 exponentCF = 1
 exponentSF = 0.75
-matrixList = list()
+
 
 #simple
-setwd("C:/models/munich/data/1.000.75")
+folder = ("C:/projects/scaling_matsim_data/skims/1.000.75/")
+matrixList = list()
 for (i in 1:6){
   for (j in 1:1){
     scaling = scalingVector[i]
@@ -28,13 +26,14 @@ for (i in 1:6){
     capacity = paste(format(round(as.numeric(scaling)^as.numeric(exponentCF),2),nsmall = 2))
     storage = paste(format(round(as.numeric(scaling)^as.numeric(exponentSF),2),nsmall = 2))
     simulationName = paste("TF",scaling,"CF",capacity,"SF",storage,"IT",iterations,"scalingSFExp",exponentSF,"CFExp",exponentCF, "TEST", sep = "")
-    fileName = paste("tt" , simulationName,".omx", sep ="")
+    fileName = paste(folder,"tt" , simulationName,".omx", sep ="")
     matrixList[[i]] = readMatrixOMX(fileName, "mat1")
   }
 }
 
 #full
-setwd("C:/models/munich/data/1.000.75full")
+folder = ("C:/projects/scaling_matsim_data/skims/1.000.75full/")
+matrixList = list()
 for (i in 1:6){
   for (j in 1:1){
     scaling = scalingVector[i]
@@ -42,10 +41,66 @@ for (i in 1:6){
     capacity = paste(format(round(as.numeric(scaling)^as.numeric(exponentCF),2),nsmall = 2))
     storage = paste(format(round(as.numeric(scaling)^as.numeric(exponentSF),2),nsmall = 2))
     simulationName = paste("TF",scaling,"CF",capacity,"SF",storage,"IT",iterations,"scalingSFExp",exponentSF,"CFExp",exponentCF, "TEST", sep = "")
-    fileName = paste("tt" , simulationName,".omx", sep ="")
-    matrixList[[6+i]] = readMatrixOMX(fileName, "mat1")
+    fileName = paste(folder,"tt" , simulationName,".omx", sep ="")
+    matrixList[[i]] = readMatrixOMX(fileName, "mat1")
   }
 }
+
+#compare accessibilities
+zoneListFileName = "C:/models/munich/input/plans/centroids_id_new.csv"
+zoneList = read.csv(zoneListFileName) %>% select(id, population)
+zonePopulation = zoneList$population
+
+beta = -0.05
+alpha = 1.2
+
+accessibilityList = list()
+for (i in 1:6){
+  matrix = matrixList[[i]]
+  print(mean(matrix))
+  matrix = exp(beta * matrix)
+  populations = zonePopulation ^ alpha
+  accessibilities =  matrix %*% populations
+  accessibilityList[[i]] = accessibilities
+  
+}
+
+accessData = data.frame(id = zoneList$id)
+maxValue = max(accessibilityList[[1]])
+accessData$acc1 = accessibilityList[[1]]/maxValue * 100
+maxValue = max(accessibilityList[[2]])
+accessData$acc5 = accessibilityList[[2]]/maxValue * 100
+maxValue = max(accessibilityList[[3]])
+accessData$acc10 = accessibilityList[[3]]/maxValue * 100
+maxValue = max(accessibilityList[[4]])
+accessData$acc20= accessibilityList[[4]]/maxValue * 100
+maxValue = max(accessibilityList[[5]])
+accessData$acc50 = accessibilityList[[5]]/maxValue * 100
+
+
+accessDataRef = data.frame(id = zoneList$id, ref = accessibilityList[[6]])
+maxValue = max(accessDataRef$ref)
+accessDataRef$ref = accessDataRef$ref/maxValue * 100
+
+accessData = melt(accessData, id.vars = "id")
+accessData = merge(x=accessData, y=accessDataRef, by="id")
+
+
+labs_scales = c("1%","5%","10%","20%","50%")
+names(labs_scales) = c("acc1","acc5","acc10","acc20","acc50")
+
+ggplot(accessData, aes(x=ref, y=value, color=variable)) +
+  geom_point(size = 1, alpha= 0.1) + theme_bw() +
+  xlab("100% - accessibility") +
+  ylab("scaled - accessibility") + 
+  geom_abline(intercept = 0, slope = 1) + 
+  theme(legend.position = "none") + 
+  scale_color_manual(values= c("red", "pink", "blue", "lightblue","green4","darkgray")) +
+  facet_wrap("variable", ncol = 2, labeller = labeller(variable = labs_scales))
+
+
+accessDataSimple = accessData
+
 
 #compare a set of origin-destination alternatives
 

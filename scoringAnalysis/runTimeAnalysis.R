@@ -100,21 +100,9 @@ summary = allData %>%
 summary = summary %>% filter(iterations != 100)
 
 
-ggplot(summary %>% filter(network == "coarse"), aes(x=as.numeric(scalingFactor)* 100, y=runtime,
-                    group = as.factor(iterations),
-                    color = as.factor(iterations))) +
-  geom_path(size = 1) + 
-  geom_point()+
-  theme_light() +
-  xlab("Scale factor (%)")+
-  ylab("Runtime (h)") + 
-  labs(color = "Scaling factor (%)") + 
-  theme(legend.position = "bottom") + 
-  labs(group = "Number of iterations", color = "Number of iterations")
-
 ggplot(summary %>% filter(iterations == 50), aes(x=as.numeric(scalingFactor)* 100, y=runtime,
-                                                    group = as.factor(network),
-                                                    color = as.factor(network))) +
+                    group = as.factor(network),
+                    linetype = as.factor(network))) +
   geom_path(size = 1) + 
   geom_point()+
   theme_light() +
@@ -122,5 +110,18 @@ ggplot(summary %>% filter(iterations == 50), aes(x=as.numeric(scalingFactor)* 10
   ylab("Runtime (h)") + 
   labs(color = "Scaling factor (%)") + 
   theme(legend.position = "bottom") + 
-  labs(group = "Network", color = "Network")
+  labs(group = "Network", linetype = "Network")
+
+ggplot(summary %>% filter(network == "coarse"), aes(x=as.numeric(scalingFactor)* 100, y=runtime,
+                                                    group = as.factor(iterations),
+                                                 size = as.factor(iterations))) +
+  geom_path() + 
+  geom_point(shape = 21, size = 3, fill = "white")+
+  theme_light() +
+  scale_size_discrete(range = c(1,3)) + 
+  xlab("Scale factor (%)") +
+  ylab("Runtime (h)") + 
+  labs(color = "Scaling factor (%)") + 
+  theme(legend.position = "bottom") + 
+  labs(group = "Iterations", size = "Iterations")
   

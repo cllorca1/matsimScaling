@@ -1,13 +1,15 @@
-##get differences in link volumes between different scaling factors (re-scaled) and store them in a file
+##get differences in link volumes between different scaling factors (re-scaled) 
+##and store them in a file to plot them in a map
 
 library(ggplot2)
 library(dplyr)
 library(reshape2)
+library(data.table)
 setwd("C:/projects/MATSim/scaling/analysis/links")
 
-path = "C:/models/munich/output/1.000.75"
+path = "C:/projects/scaling_matsim_data/matsim_outputs/1.000.75"
 
-path = "C:/models/munich/output/1.000.75full"
+#path = "C:/projects/scaling_matsim_data/matsim_outputs/1.000.75full"
 
 exponentCF = 1
 
@@ -31,8 +33,8 @@ for (scaling in scalingVector){
     fileName = paste("scalingSFExp",exponentSF,"CFExp",exponentCF,"TEST_2016.",iterations,".linkstats.txt.gz",sep = "")
     pathToFile = paste(path,simulationName,"ITERS",lastIterationPath,fileName,sep = "/")
     
-    data = read.csv(pathToFile, sep = "\t", header=TRUE)
-    #plots the AADT
+    data = read.csv(pathToFile, sep = "\t" )
+    #fread does not work with some of the linkstats files
     rescalingFactor = 1/as.numeric(scaling)
     
     
@@ -73,78 +75,84 @@ differenceTable$dailyVC50 = dataAll[[5]]$HRS7.8avg/ differenceTable$CAPACITY
 differenceTable$dailyVC100 = dataAll[[6]]$HRS7.8avg/ differenceTable$CAPACITY
 
 differenceTableLong = melt(differenceTable, variable.name = "variable", id.vars = c("LINK", "capacityCut", "speedCut" , "CAPACITY", "LENGTH"), value.name = "value")
+differenceTableLong2 = melt(differenceTable, variable.name = "variable", id.vars = c("LINK", "capacityCut", "speedCut" , "CAPACITY", "LENGTH", "dailyVC100"), value.name = "value")
 
 
 
-differenceTableLong %>% group_by(variable, capacityCut) %>% summarise(vcRatio = mean(value)) %>% tidyr::spread(capacityCut, vcRatio)
+summary = differenceTableLong %>% group_by(variable, capacityCut) %>% summarise(vcRatio = mean(value)) %>% tidyr::spread(capacityCut, vcRatio)
 
 
+labs_cap = c("1250","2500","3750","5000","6125","7500","8750","10000","15000")
+names(labs_cap) = c(0,1,2,3,4,5,6,7,8)
 
-ggplot(differenceTableLong, aes(x=value, group = variable, color=variable, weight = LENGTH)) + stat_ecdf()
+
+differenceTableLong2 = differenceTableLong2 %>% filter(differenceTableLong2$LINK %% 10 == 0)
+
+labs_scales = c("1%","5%","10%","20%","50%")
+names(labs_scales) = c("dailyVC1","dailyVC5","dailyVC10","dailyVC20","dailyVC50")
+
+ggplot(differenceTableLong2, aes(x=dailyVC100, y=value, color=variable)) +
+  geom_point(size = 1, alpha= 0.1) + theme_bw() +
+  xlab("100% link v/c") +
+  ylab("scaled link v/c") + 
+  geom_abline(intercept = 0, slope = 1) + 
+  theme(legend.position = "none") + 
+  scale_color_manual(values= c("red", "pink", "blue", "lightblue","green4","darkgray")) +
+  facet_wrap("variable", ncol = 2, labeller = labeller(variable = labs_scales))
+  
+
+ggplot(differenceTableLong, aes(x=value, group = variable,fill = variable, color=variable)) +
+  stat_ecdf() + 
+  ggtitle("density function V/C ratio (>0) at 7-8 peak hour by scale factor") + 
+  facet_wrap("capacityCut",ncol = 3,labeller=labeller(capacityCut = labs_cap), scales = "free_y")
 
 
 # 
 # 
 # #analyze differences in flow
 # 
-# differenceTable$morning1 = dataAll[[1]]$HRS7.8avg
-# differenceTable$morning5 = dataAll[[2]]$HRS7.8avg
-# differenceTable$morning10 = dataAll[[3]]$HRS7.8avg
-# differenceTable$morning20 = dataAll[[4]]$HRS7.8avg
-# differenceTable$morning50 = dataAll[[5]]$HRS7.8avg
-# differenceTable$morning100 = dataAll[[6]]$HRS7.8avg
-# 
-# differenceTable$evening1 = dataAll[[1]]$HRS17.18avg
-# differenceTable$evening5 = dataAll[[2]]$HRS17.18avg
-# differenceTable$evening10 = dataAll[[3]]$HRS17.18avg
-# differenceTable$evening20 = dataAll[[4]]$HRS17.18avg
-# differenceTable$evening50 = dataAll[[5]]$HRS17.18avg
-# differenceTable$evening100 = dataAll[[6]]$HRS17.18avg
-# 
-# differenceTable$d1m = differenceTable$morning100 - differenceTable$morning1
-# differenceTable$d5m = differenceTable$morning100 - differenceTable$morning5
-# differenceTable$d10m = differenceTable$morning100 - differenceTable$morning10
-# differenceTable$d20m = differenceTable$morning100 - differenceTable$morning20
-# differenceTable$d50m = differenceTable$morning100 - differenceTable$morning50
-# 
-# differenceTable$d1e = differenceTable$evening100 - differenceTable$evening1
-# differenceTable$d5e = differenceTable$evening100 - differenceTable$evening5
-# differenceTable$d10e = differenceTable$evening100 - differenceTable$evening10
-# differenceTable$d20e = differenceTable$evening100 - differenceTable$evening20
-# differenceTable$d50e = differenceTable$evening100 - differenceTable$evening50
-# 
-# summary(differenceTable)
+differenceTable$morning1 = dataAll[[1]]$HRS7.8avg
+differenceTable$morning5 = dataAll[[2]]$HRS7.8avg
+differenceTable$morning10 = dataAll[[3]]$HRS7.8avg
+differenceTable$morning20 = dataAll[[4]]$HRS7.8avg
+differenceTable$morning50 = dataAll[[5]]$HRS7.8avg
+differenceTable$morning100 = dataAll[[6]]$HRS7.8avg
+
+differenceTable$evening1 = dataAll[[1]]$HRS17.18avg
+differenceTable$evening5 = dataAll[[2]]$HRS17.18avg
+differenceTable$evening10 = dataAll[[3]]$HRS17.18avg
+differenceTable$evening20 = dataAll[[4]]$HRS17.18avg
+differenceTable$evening50 = dataAll[[5]]$HRS17.18avg
+differenceTable$evening100 = dataAll[[6]]$HRS17.18avg
+
+differenceTable$d1m = (differenceTable$morning100 - differenceTable$morning1)/differenceTable$morning100
+differenceTable$d5m = (differenceTable$morning100 - differenceTable$morning5)/differenceTable$morning100
+differenceTable$d10m = (differenceTable$morning100 - differenceTable$morning10)/differenceTable$morning100
+differenceTable$d20m = (differenceTable$morning100 - differenceTable$morning20)/differenceTable$morning100
+differenceTable$d50m = (differenceTable$morning100 - differenceTable$morning50)/differenceTable$morning100
+
+differenceTable$d1e = (differenceTable$evening100 - differenceTable$evening1)/differenceTable$evening100
+differenceTable$d5e = (differenceTable$evening100 - differenceTable$evening5)/differenceTable$evening100
+differenceTable$d10e = (differenceTable$evening100 - differenceTable$evening10)/differenceTable$evening100
+differenceTable$d20e = (differenceTable$evening100 - differenceTable$evening20)/differenceTable$evening100
+differenceTable$d50e = (differenceTable$evening100 - differenceTable$evening50)/differenceTable$evening100
+
+summary(differenceTable)
+
+
+
+
+
 # 
 # ggplot(differenceTable, aes(capacityCut)) + geom_bar()
 # 
 # 
-# write.csv(x=differenceTable, file = "networkMap/netowrkDifferences.csv", row.names = FALSE)
-# 
-# 
-# differenceTableSelect = differenceTable %>% select(LINK, capacityCut, speedCut, d1m, d5m, d10m, d20m, d50m)
-# 
-# differenceTableSelect = differenceTable %>% select(LINK, capacityCut, speedCut, d1e, d5e, d10e, d20e, d50e)
-# 
-# differenceTableLong = melt(differenceTableSelect, variable.name = "variable", id.vars = c("LINK", "capacityCut", "speedCut"), value.name = "value")
-# 
-# ggplot(differenceTableLong, aes(x=value, by=variable, color=variable)) + stat_ecdf() + xlim(-250,250)
-# ggplot(differenceTableLong, aes(x=value, by=variable, fill=variable, color=variable)) + geom_density(alpha = .1) + xlim(-250,250)
-# 
-# ggplot(differenceTableLong, aes(x=value, by=variable, fill=variable, color=variable)) + geom_density(alpha = .1, position="fill") + xlim(-250,250)
-# 
-# 
-# #calculate squared errors
-# 
-# sqrt(sum((differenceTable$d1m)^2)/nrow(differenceTable))
-# sqrt(sum((differenceTable$d5m)^2)/nrow(differenceTable))
-# sqrt(sum((differenceTable$d10m)^2)/nrow(differenceTable))
-# sqrt(sum((differenceTable$d20m)^2)/nrow(differenceTable))
-# sqrt(sum((differenceTable$d50m)^2)/nrow(differenceTable))
-# 
-# sqrt(sum((differenceTable$d1e)^2)/nrow(differenceTable))
-# sqrt(sum((differenceTable$d5e)^2)/nrow(differenceTable))
-# sqrt(sum((differenceTable$d10e)^2)/nrow(differenceTable))
-# sqrt(sum((differenceTable$d20e)^2)/nrow(differenceTable))
-# sqrt(sum((differenceTable$d50e)^2)/nrow(differenceTable))
-# 
-# 
+write.csv(x=differenceTable, file = "networkMap/netowrkDifferences.csv", row.names = FALSE)
+# header = names(differenceTable)
+# header[1] = "Integer"
+# for (i in 1:length(header)){
+#   header[i] = "Real"
+# }
+# write.table(x=(header), file = "networkMap/netowrkDifferences.csvt", row.names = F)
+
+

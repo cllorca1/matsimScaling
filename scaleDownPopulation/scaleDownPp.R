@@ -11,7 +11,7 @@ expansionFactor = 100
 pp11 = fread("pp_2011.csv")
 jj11 = fread("jj_2011.csv")
 hh11 = fread("hh_2011.csv")
-dd11 = fread("dd_2011.csv")
+hh1dd11 = fread("dd_2011.csv")
 
 numberOfMarriedByHh = pp11 %>% filter(relationShip == "married") %>%  group_by(hhid) %>% summarize(count = n())
 summary(as.factor(numberOfMarriedByHh$count))
@@ -42,8 +42,9 @@ vacant_jj11 = vacant_jj11 %>%
   rowwise() %>%
   mutate (random = as.integer(sample(1:expansionFactor, size=1)))
 
-vacant_dd11_subset = vacant_dd11 %>% filter(random == 1)
-vacant_jj11_subset = vacant_jj11 %>% filter(random == 1)
+#double of vacants is added... 
+vacant_dd11_subset = vacant_dd11 %>% filter(random < 3)
+vacant_jj11_subset = vacant_jj11 %>% filter(random < 3)
 
 
 vacant_dd11_subset = vacant_dd11_subset %>% select(1:(ncol(vacant_dd11_subset) - 1))

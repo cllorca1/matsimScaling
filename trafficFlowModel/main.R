@@ -4,9 +4,9 @@ link_capacities = c("100.0","500.0","1000.0","2000.0")
 link_lengths = c("50000.0","5000.0","1000.0","500.0","100.0")
 
 
-link_capacities = c("500.0","1000.0")
-link_lengths = c("100.0","1000.0", "5000.0")
-simulationNames = c("withHoles","withHoles0.95","withHoles0.90","withHoles0.85", "withHoles0.75")
+link_capacities = c("750.0","1000.0","1250.0")
+link_lengths = c("100.0","1000.0", "10000.0")
+simulationNames = c("withHoles1.00","withHoles.95","withHoles.90","withHoles.85", "withHoles.80", "withHoles.75", "withHoles.70", "withHoles.65")
 
 source("c:/code/matsimScaling/trafficFlowModel/analyzeTrafficFlowSimpleModel.R")
 
@@ -73,6 +73,7 @@ for (simulationName in simulationNames){
               speed = mean(speed),speed_ref = mean(speed_ref))
   
   global_summary$length = as.numeric(global_summary$length)
+  global_summary$capacity = as.numeric(global_summary$capacity)
   
   #until here different according to the exponent of the capacity
   
@@ -83,11 +84,20 @@ for (simulationName in simulationNames){
   
 }
 
-labs = c("L = 100 m", "L = 500 m", "L = 1,000 m", "L = 5,000 m","L = 50,000 m" )
-names(labs) = c(100,500,1000,5000,50000)
+labs = c("L = 100 m", "L = 500 m", "L = 1,000 m", "L = 5,000 m","L = 10,000 m" )
+names(labs) = c(100,500,1000,5000,10000)
 
-labs2 = c("C = 1,000 veh/h" , "C = 2,000 veh/h" )
-names(labs2) = c("500.0","1000.0")
+labs2 = c("C = 1,000 veh/h" ,"C = 1500 veh/h", "C=1600 veh/h","C=1800 veh/h", "C = 2,000 veh/h", "C = 2,500 veh/h" )
+names(labs2) = c(500,750, 800, 900, 1000,1250)
+
+all$exponent[all$exponent=="withHoles1.00"] = 1
+all$exponent[all$exponent=="withHoles.95"] = 0.95
+all$exponent[all$exponent=="withHoles.90"] = 0.90 
+all$exponent[all$exponent=="withHoles.85"] = 0.85
+all$exponent[all$exponent=="withHoles.80"] = 0.80
+all$exponent[all$exponent=="withHoles.75"] = 0.75
+all$exponent[all$exponent=="withHoles.70"] = 0.70
+all$exponent[all$exponent=="withHoles.65"] = 0.65
 
 
 ggplot(all, aes(x=scale, y= tt/tt_ref*100, color = as.factor(exponent), group = as.factor(exponent))) +
@@ -98,8 +108,19 @@ ggplot(all, aes(x=scale, y= tt/tt_ref*100, color = as.factor(exponent), group = 
   xlab("Scaling factor (%) (log-scale)") + 
   ylab("Relative error of travel time \n respect of 100% simulation (%)") +
   theme_bw() + theme(legend.position = "bottom") + 
-  geom_hline(yintercept = 100, size = 1) + coord_cartesian(ylim=c(0, 500))
+  geom_hline(yintercept = 100, size = 1) + coord_cartesian(ylim=c(0, 500)) + 
+  labs(color = "Exponent of the storage capacity factor")
  
+
+ggplot(all, aes(x=scale, y= length / tt*3.6, color = as.factor(exponent), group = as.factor(exponent))) +
+  geom_point(size = 1) +
+  geom_path(size = 1) + 
+  facet_grid(capacity~length, labeller = labeller(length = labs, capacity = labs2)) +
+  xlab("Scaling factor (%)") + 
+  ylab("Average speed (km/h)") +
+  theme_bw() + theme(legend.position = "bottom") +
+  labs(color = "Exponent of the storage capacity factor")
+
 
 ggplot(all, aes(x=scale, y= speed/speed_ref*100,
                            color = as.factor(exponent), group = as.factor(exponent))) +

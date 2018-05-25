@@ -54,6 +54,7 @@ ggplot(allData, aes(x=ITERATION, y=avg..AVG,
   xlab("Iteration")+
   ylab("Average MATSim plan score (points)") + 
   labs(color = "Scaling factor (%)") + 
+  scale_color_manual(values= c("red", "pink", "blue", "lightblue","green4","darkgray")) +
   facet_grid(.~iterations, scale = "free_y", labeller = labeller(iterations= labs)) + 
   theme(legend.position = "bottom")
   

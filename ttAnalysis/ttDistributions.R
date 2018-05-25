@@ -56,11 +56,17 @@ melted = melted %>% group_by(iterations, network, scale, time) %>% summarize(val
 
 melted$iterations = as.factor(as.numeric(melted$iterations))
 
+
+it_labs = c("50 iterations", "100 iterations", "200 iterations")
+names(it_labs) = c(50,100,200)
+
 ggplot(melted, aes(x=time, y=value/as.numeric(scale), color = as.factor(scale))) +
-  geom_line() +
-  geom_point() +
-  facet_grid (.~ iterations) + 
-  theme_bw() + theme(legend.position = "bottom") + 
+  geom_line(size = 1) +
+  geom_point(shape = 21, size = 3, fill = "white") +
+  facet_grid (.~ iterations, labeller = labeller(iterations = it_labs)) + 
+  theme_bw() +
+  theme(legend.position = "bottom") + 
+  scale_color_manual(values= c("red", "pink", "blue", "lightblue","green4","darkgray")) + 
   labs(color = "Scale factor") + ylab("Frequency (#trips)") + 
   xlab("travel time (min)")
 

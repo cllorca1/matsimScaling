@@ -7,25 +7,30 @@ setwd("C:/projects/MATSim/scaling/analysis/links")
 linksTable = read.csv("networkMap/linksList.csv")
 
 setwd("C:/projects/MATSim/scaling/analysis/links")
-linksTableFull = fread("scalingSFExp0.75CFExp1TEST_2016.50.linkstats.txt")
+linksTableFull = fread("networkMap/linksListDense.csv")
 
-#ggplot(linksTable, aes(x=LENGTH))+stat_ecdf()
-#ggplot(linksTable, aes(x=LANES))+stat_ecdf()
-ggplot(linksTable, aes(x=CAPACITY))+stat_ecdf() + xlim(0,10000)
-ggplot(linksTable, aes(x=FRSPEED))+stat_ecdf()
-
-ggplot(linksTable, aes(x=LENGTH))+stat_ecdf() +
-  geom_vline(xintercept = 100) + 
-  geom_vline(xintercept = 500) +
-  geom_vline(xintercept = 1000)+
-  geom_vline(xintercept = 5000)
+linksTable$laneCapacity = linksTable$CAPACITY / linksTable$LANES
+linksTableFull$laneCapacity = linksTableFull$CAPACITY / linksTableFull$LANES
 
 bins = c(0,100,500,1000,5000,50000)
 linksTable$l_bin = cut(linksTable$LENGTH, breaks = bins)
 linksTableFull$l_bin = cut(linksTableFull$LENGTH, breaks = bins)
 
-linksTable %>% group_by(l_bin) %>% summarize(length = sum(LENGTH), count = n())
-linksTableFull %>% group_by(l_bin) %>% summarize(length = sum(LENGTH), count = n())
+bins = c(0,501,1001,1501,2001,50000)
+linksTable$c_bin = cut(linksTable$laneCapacity, breaks = bins)
+linksTableFull$c_bin = cut(linksTableFull$laneCapacity, breaks = bins)
+
+
+
+
+linksTable %>%
+  group_by(l_bin, c_bin) %>%
+  summarize(length = sum(LENGTH)) %>% 
+  tidyr::spread(c_bin, length)
+linksTableFull %>%
+  group_by(l_bin, c_bin) %>%
+  summarize(length = sum(LENGTH)) %>% 
+  tidyr::spread(c_bin, length)
 
 
 linksTable$capacityCut = cut(linksTable$CAPACITY,
