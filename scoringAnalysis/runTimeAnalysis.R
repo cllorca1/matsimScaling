@@ -103,14 +103,14 @@ summary = summary %>% filter(iterations != 100)
 ggplot(summary %>% filter(iterations == 50), aes(x=as.numeric(scalingFactor)* 100, y=runtime,
                     group = as.factor(network),
                     linetype = as.factor(network))) +
-  geom_path(size = 1) + 
-  geom_point()+
+  geom_line(size = 1) + 
+  geom_point(shape = 21, size = 3, fill = "white") +
   theme_light() +
   xlab("Scale factor (%)")+
   ylab("Runtime (h)") + 
   labs(color = "Scaling factor (%)") + 
   theme(legend.position = "bottom") + 
-  labs(group = "Network", linetype = "Network")
+  labs(group = "Network", linetype = "Network") + ylim(0,80)
 
 ggplot(summary %>% filter(network == "coarse"), aes(x=as.numeric(scalingFactor)* 100, y=runtime,
                                                     group = as.factor(iterations),

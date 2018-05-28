@@ -99,7 +99,28 @@ ggplot(accessData, aes(x=ref, y=value, color=variable)) +
   facet_wrap("variable", ncol = 2, labeller = labeller(variable = labs_scales))
 
 
-accessDataSimple = accessData
+#full vs. simple: 
+
+#store the simple one
+simpleNetwork = accessData
+fineNetwork = accessData
+
+simpleNetwork$network = "coarse"
+fineNetwork$network = "fine"
+
+allNetworks = rbind(simpleNetwork, fineNetwork)
+
+allNetworks = allNetworks %>% filter(variable == "acc1") %>% select(id, value, network)
+allNetworks = cast(data = allNetworks, formula = id~ network, fun.aggregate = sum)
+
+
+ggplot(allNetworks, aes(x=coarse, y=fine)) +
+  geom_point(size = 1, alpha= 0.1) + theme_bw() +
+  xlab("100% - coarse network accessibility") +
+  ylab("100% - fine network accessibility") + 
+  geom_abline(intercept = 0, slope = 1) + 
+  theme(legend.position = "none")
+
 
 
 #compare a set of origin-destination alternatives

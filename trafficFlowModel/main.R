@@ -113,13 +113,14 @@ ggplot(all, aes(x=scale, y= tt/tt_ref*100, color = as.factor(exponent), group = 
  
 
 ggplot(all, aes(x=scale, y= length / tt*3.6, color = as.factor(exponent), group = as.factor(exponent))) +
-  geom_point(size = 1) +
-  geom_path(size = 1) + 
+  geom_path(size = 1) +
+  geom_point(shape = 21, size = 3, fill = "white") +
   facet_grid(capacity~length, labeller = labeller(length = labs, capacity = labs2)) +
   xlab("Scaling factor (%)") + 
   ylab("Average speed (km/h)") +
   theme_bw() + theme(legend.position = "bottom") +
-  labs(color = "Exponent of the storage capacity factor")
+  labs(color = "Exponent of the storage capacity factor") + 
+  scale_color_brewer(palette = "Paired")
 
 
 ggplot(all, aes(x=scale, y= speed/speed_ref*100,
