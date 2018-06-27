@@ -58,55 +58,13 @@ ggplot(data, aes(x=value2)) + stat_ecdf()
 
 listOMX(file2)
 
+#note that the second matrix is zero based!! this has been changed in the function accordingly
 
+path = "c:/models/mito/muc/mitoMunich/"
 
+fileName1 = paste(path, "skims/skimsAllIntrazonal.omx", sep = "")
+fileName2 = paste(path,"output/outputCarSkim.omx", sep = "")
 
-
-compareMatrices = function(fileName1, fileName2, n, threshold){
-  
-  library(ggplot2)
-  source("C:/code/omx/api/r/omx2.R")
-  
-  ttCongested = readMatrixOMX(fileName1, "mat1")
-  ttUncongested = readMatrixOMX(fileName2, "mat1")
-  
-  nZones = dim(ttCongested)[1]
-  nOrig = n
-  randomOrigins = sample(1:nZones,nOrig,replace=F) 
-  nDest = n
-  randomDestinations = sample(1:nZones,nOrig,replace=F) 
-  
-  data = data.frame()
-  counter=0;
-  for (origin in randomOrigins){
-    for (destination in randomDestinations){
-      tC = ttCongested[origin, destination]
-      tU = ttUncongested[origin, destination]
-      if (!is.na(tC) & !is.na(tU)){
-        if (tC < threshold){
-          newData = data.frame(origin = origin, destination = destination, value1 = tC, value2 = tU)
-          data = rbind(data, newData)
-        }
-      }
-    }
-    print(paste("origin:",counter, sep = " "))
-    counter = counter + 1
-  }
-  
-  print(
-    ggplot(data, aes(x=value1, y = value2)) +
-      geom_point(size = .3, alpha = .2) +
-      geom_abline(slope = 1, intercept = 0, color = "red") +
-      xlab(fileName1) + 
-      ylab(fileName2)
-  )
-  print(
-    ggplot(data, aes(x=value1-value2)) + 
-      stat_ecdf() + 
-      xlab(paste(fileName1,fileName2, sep="-"))
-  )
-  #return the data
-  data
-}
-
+data = compareMatrices(fileName1, fileName2, 200,50000,"timeByTime", "timeByTime", 1/60, 1) 
+data = compareMatrices(fileName1, fileName2, 50,500000,"distanceByTime", "distanceByTime", 1, 1) 
 
