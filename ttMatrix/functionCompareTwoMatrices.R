@@ -20,7 +20,7 @@ compareMatrices = function(fileName1, fileName2, n, threshold, matrixName1, matr
   for (origin in randomOrigins){
     for (destination in randomDestinations){
       tC = ttCongested[origin, destination]
-      tU = ttUncongested[origin+1, destination+1]
+      tU = ttUncongested[origin, destination]
       if (!is.na(tC) & !is.na(tU)){
         if (tC < threshold){
           newData = data.frame(origin = origin, destination = destination, value1 = tC, value2 = tU)

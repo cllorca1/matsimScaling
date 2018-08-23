@@ -58,13 +58,24 @@ ggplot(data, aes(x=value2)) + stat_ecdf()
 
 listOMX(file2)
 
-#note that the second matrix is zero based!! this has been changed in the function accordingly
+path = "c:/models/silo/muc/skims/"
 
-path = "c:/models/mito/muc/mitoMunich/"
+fileName1 = paste(path, "skimsAllIntrazonal.omx", sep = "")
+fileName2 = paste(path,"travelTimeAuto.omx", sep = "")
+
+data = compareMatrices(fileName1, fileName2, 100,50,"timeByTime", "HOVTime", 1/60, 1) 
+data = compareMatrices(fileName1, fileName2, 200,500000,"distanceByTime", "distanceByTime", 1, 1) 
+
+
+path = "c:/models/silo/muc/"
 
 fileName1 = paste(path, "skims/skimsAllIntrazonal.omx", sep = "")
-fileName2 = paste(path,"output/outputCarSkim.omx", sep = "")
+fileName2 = paste(path,"mitoOutput/2050/outputCarSkim.omx", sep = "")
 
-data = compareMatrices(fileName1, fileName2, 200,50000,"timeByTime", "timeByTime", 1/60, 1) 
-data = compareMatrices(fileName1, fileName2, 50,500000,"distanceByTime", "distanceByTime", 1, 1) 
+data = compareMatrices(fileName1, fileName2, 50,500,"timeByTime", "timeByTime", 1/60, 1) 
+
+data = compareMatrices(fileName1, fileName2, 200,500000,"distanceByTime", "distanceByTime", 1, 1) 
+
+
+
 

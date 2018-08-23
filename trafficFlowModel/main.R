@@ -4,9 +4,20 @@ link_capacities = c("100.0","500.0","1000.0","2000.0")
 link_lengths = c("50000.0","5000.0","1000.0","500.0","100.0")
 
 
+
+
 link_capacities = c("750.0","1000.0","1250.0")
 link_lengths = c("100.0","1000.0", "10000.0")
 simulationNames = c("withHoles1.00","withHoles.95","withHoles.90","withHoles.85", "withHoles.80", "withHoles.75", "withHoles.70", "withHoles.65")
+maxVehicle = 50000
+scales = c("1.0" , "5.0" , "10.0" , "20.0" , "50.0" , "100.0")
+
+link_capacities = c("700.0", "710.0", "720.0","730.0",
+                    "740.0", "750.0","760.0","770.0","780.0","790.0","800.0")
+link_lengths = c("1000.0")
+simulationNames = c("testsSmallCapacity")
+scales = c("100.0")
+maxVehicle = 1
 
 source("c:/code/matsimScaling/trafficFlowModel/analyzeTrafficFlowSimpleModel.R")
 
@@ -18,7 +29,7 @@ for (simulationName in simulationNames){
   for (link_length in link_lengths){
     for (capacity in link_capacities){
       folder = paste("C=",capacity,"/L=",link_length,"/",sep = "")
-      run_data = try(analyzeLenght(folder,simulationName, as.numeric(link_length),60,50000))
+      run_data = try(analyzeLenght(folder,simulationName, as.numeric(link_length),60,maxVehicle, scales))
       # tt_ref = (run_data %>% filter(scale == 100) %>% select(tt))$tt
       # run_data$tt_ref = tt_ref
       # speed_ref = (run_data %>% filter(scale == 100) %>% select(speed))$speed

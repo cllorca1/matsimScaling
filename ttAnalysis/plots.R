@@ -1,3 +1,5 @@
+pacman::p_load(ggplot2, dplyr)
+
 folder = "c:/projects/MATSim/scaling/analysis/ttDistribution/"
 
 data = read.csv(paste(folder,"averageTTs.csv", sep = ""))

@@ -1,7 +1,7 @@
-analyzeLenght = function(folderName, subfolderName, length, aggr, maxVeh){
+analyzeLenght = function(folderName, subfolderName, length, aggr, maxVeh, scales){
   
   #initialize vector of scale factors
-  scales = c("1.0" , "5.0" , "10.0" , "20.0" , "50.0" , "100.0")
+  
   
   #initialize data frames for events and for vehicles
   vehicle_data = data.frame()

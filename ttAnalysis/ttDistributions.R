@@ -1,6 +1,7 @@
 #script to analyze travel time distributions
 library(dplyr)
 library(ggplot2)
+library(reshape)
 #1. test different scales for the same network and iterations
 
 folder = "c:/projects/scaling_matsim_data/matsim_outputs/1.000.75/"

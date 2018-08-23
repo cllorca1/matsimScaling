@@ -1,4 +1,5 @@
 setwd("C:/models/silo/muc/microData")
+setwd("C:/models/silo/mucSmall/microData")
 
 # install.packages("data.table")
 # install.packages("dplyr")
@@ -10,8 +11,8 @@ library(dplyr)
 library(ggplot2)
 
 #read 2011 files
-pp11 = fread("pp_2011.csv")
-jj11 = fread("jj_2011.csv")
+pp11 = fread("ppS_2011.csv")
+jj11 = fread("jjS_2011.csv")
 
 #read 2050 files
 pp50 = fread("futureYears/pp_2050.csv")
@@ -107,17 +108,6 @@ ppjjhh50  = ppjjhh50 %>% select(homeZone, workZone, id.x, hhworkers)
 fileNameZones = "C:/models/silo/muc/input/zoneSystem.csv"
 zones = read.csv(fileNameZones)
 
-#plot jobs by location
-
-
-
-
-
-#analyze 1-worker-hh
-
-print(nrow(ppjj11))
-print(nrow(ppjjhh50))
-
 #calculate totals of employment by county
 #run the script analyze_region_selection.R first
 
@@ -130,11 +120,17 @@ summary50 = ppjjhh50 %>% group_by(work_region_name) %>% summarize(count = n())
 summary11$year = 2011
 summary50$year = 2050
 
+totals11 = sum(summary11$count)
+totals50 = sum(summary50$count)
+
+summary11$percent = summary11$count / totals11
+summary50$percent = summary50$count / totals11
+
 ggplot(rbind(summary11, summary50), aes(y=count, x = work_region_name, group = as.factor(year)
                                         , fill = as.factor(year))) +
   geom_bar(stat = "identity", position=position_dodge()) + 
   theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) + 
-  ggtitle("employers by region - at the work location")
+  ggtitle("jobs by region")
 
 
 

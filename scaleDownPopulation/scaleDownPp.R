@@ -12,7 +12,7 @@ expansionFactor = 100
 pp11 = fread("pp_2011.csv")
 jj11 = fread("jj_2011.csv")
 hh11 = fread("hh_2011.csv")
-hh1dd11 = fread("dd_2011.csv")
+dd11 = fread("dd_2011.csv")
 
 numberOfMarriedByHh = pp11 %>% filter(relationShip == "married") %>%  group_by(hhid) %>% summarize(count = n())
 summary(as.factor(numberOfMarriedByHh$count))
