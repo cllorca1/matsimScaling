@@ -1,6 +1,4 @@
-
-
-library(ggplot2)
+pacman::p_load(data.table, dplyr, ggplot2)
 
 setwd("C:/projects/MATSim/scaling/analysis/scoring")
 
@@ -9,7 +7,7 @@ folder = "c:/projects/scaling_matsim_data/matsim_outputs/1.000.75"
 
 
 scalingVector = c("0.01","0.05","0.10", "0.20", "0.50", "1.00")
-iterationsVector = c("50","100","200")
+iterationsVector = c("50","100","200", "300", "500")
 
 allData = data.frame()
 for (scaling in scalingVector){
@@ -43,10 +41,10 @@ summary(as.factor(allData$iterations))
 allData$group = as.factor(paste(allData$scalingFactor,allData$iterations,sep = "-"))
 allData$iterations = as.factor(as.numeric(allData$iterations))
 
-labs = c("50 iterations", "100 iterations", "200 iterations")
-names(labs) = c(50,100,200)
+labs = c("50 iterations", "100 iterations", "200 iterations", "300 iterations", "500 iterations")
+names(labs) = c(50,100,200, 300,500)
 
-ggplot(allData, aes(x=ITERATION, y=avg..AVG,
+ggplot(allData %>% filter(iterations != "300", iterations != "500"), aes(x=ITERATION, y=avg..AVG,
                     group = group,
                     color = as.factor(100*as.numeric(scalingFactor)))) +
   geom_line(size = 1)+
@@ -57,4 +55,17 @@ ggplot(allData, aes(x=ITERATION, y=avg..AVG,
   scale_color_manual(values= c("red", "pink", "blue", "lightblue","green4","darkgray")) +
   facet_grid(.~iterations, scale = "free_y", labeller = labeller(iterations= labs)) + 
   theme(legend.position = "bottom")
+
+ggplot(allData %>% filter(scalingFactor == "0.05"
+                          | scalingFactor == "1.00"),
+       aes(x=ITERATION, y=avg..AVG,group = group,color = as.factor(100*as.numeric(scalingFactor)))) +
+  geom_line(size = 1)+
+  theme_bw()+
+  xlab("Iteration")+
+  ylab("Average MATSim plan score (points)") + 
+  labs(color = "Scaling factor (%)") + 
+  scale_color_manual(values= c("pink","darkgray")) +
+  facet_grid(.~iterations, scale = "free_y", labeller = labeller(iterations= labs)) + 
+  theme(legend.position = "bottom")
+
   

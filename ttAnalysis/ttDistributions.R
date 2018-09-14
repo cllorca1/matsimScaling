@@ -7,7 +7,7 @@ library(reshape)
 folder = "c:/projects/scaling_matsim_data/matsim_outputs/1.000.75/"
 
 scalingVector = c("0.01","0.05","0.10", "0.20", "0.50", "1.00")
-iterationsVector = c("50","100","200")
+iterationsVector = c("50","100","200", "300", "500")
 
 
 allData = data.frame()
@@ -58,8 +58,8 @@ melted = melted %>% group_by(iterations, network, scale, time) %>% summarize(val
 melted$iterations = as.factor(as.numeric(melted$iterations))
 
 
-it_labs = c("50 iterations", "100 iterations", "200 iterations")
-names(it_labs) = c(50,100,200)
+it_labs = c("50 iterations", "100 iterations", "200 iterations", "300 iterations", "500 iterations")
+names(it_labs) = c(50,100,200,300,500)
 
 ggplot(melted, aes(x=time, y=value/as.numeric(scale), color = as.factor(scale))) +
   geom_line(size = 1) +
@@ -68,6 +68,16 @@ ggplot(melted, aes(x=time, y=value/as.numeric(scale), color = as.factor(scale)))
   theme_bw() +
   theme(legend.position = "bottom") + 
   scale_color_manual(values= c("red", "pink", "blue", "lightblue","green4","darkgray")) + 
+  labs(color = "Scale factor") + ylab("Frequency (#trips)") + 
+  xlab("travel time (min)")
+
+ggplot(melted %>% filter(scale == "1.00" | scale == "0.05"), aes(x=time, y=value/as.numeric(scale), color = as.factor(scale))) +
+  geom_line(size = 1) +
+  geom_point(shape = 21, size = 3, fill = "white") +
+  facet_grid (.~ iterations, labeller = labeller(iterations = it_labs)) + 
+  theme_bw() +
+  theme(legend.position = "bottom") + 
+  scale_color_manual(values= c("pink", "darkgray")) + 
   labs(color = "Scale factor") + ylab("Frequency (#trips)") + 
   xlab("travel time (min)")
 
