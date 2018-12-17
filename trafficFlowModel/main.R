@@ -5,12 +5,40 @@ link_lengths = c("50000.0","5000.0","1000.0","500.0","100.0")
 
 
 
-
+#paper
 link_capacities = c("750.0","1000.0","1250.0")
 link_lengths = c("100.0","1000.0", "10000.0")
-simulationNames = c("withHoles1.00","withHoles.95","withHoles.90","withHoles.85", "withHoles.80", "withHoles.75", "withHoles.70", "withHoles.65")
+simulationNames = c("withHoles2.00-1.00","withHoles2.00-.95",
+                    "withHoles2.00-.90","withHoles2.00-.85",
+                    "withHoles2.00-.80", "withHoles2.00-.75",
+                    "withHoles2.00-.70", "withHoles2.00-.65")
 maxVehicle = 50000
 scales = c("1.0" , "5.0" , "10.0" , "20.0" , "50.0" , "100.0")
+#end paper
+
+
+#paper
+link_capacities = c("750.0","1000.0","1250.0")
+link_lengths = c("100.0","1000.0", "10000.0")
+simulationNames = c("withHoles1.00-1.00","withHoles1.00-.95",
+                    "withHoles1.00-.90","withHoles1.00-.85",
+                    "withHoles1.00-.80", "withHoles1.00-.75",
+                    "withHoles1.00-.70", "withHoles1.00-.65")
+maxVehicle = 1000
+scales = c("1.0" , "5.0" , "10.0" , "20.0" , "50.0" , "100.0")
+#end paper
+
+#paper
+link_capacities = c("750.0","1000.0","1250.0")
+link_lengths = c("100.0","1000.0", "10000.0")
+simulationNames = c("withHoles1.50-1.00","withHoles1.50-.95",
+                    "withHoles1.50-.90", "withHoles1.50-.85",
+                    "withHoles1.50-.80", "withHoles1.50-.75",
+                    "withHoles1.50-.70", "withHoles1.50-.65")
+maxVehicle = 1000
+scales = c("1.0" , "5.0" , "10.0" , "20.0" , "50.0" , "100.0")
+#end paper
+
 
 link_capacities = c("700.0", "710.0", "720.0","730.0",
                     "740.0", "750.0","760.0","770.0","780.0","790.0","800.0")
@@ -18,6 +46,41 @@ link_lengths = c("1000.0")
 simulationNames = c("testsSmallCapacity")
 scales = c("100.0")
 maxVehicle = 1
+
+
+########################
+
+link_capacities = c("750.0","1000.0","1250.0")
+link_lengths = c("1000.0")
+simulationNames = c("tests.50-1.00",
+                    "tests.75-1.00",
+                    "tests1.00-1.00",
+                    "tests1.25-1.00",
+                    "tests1.50-1.00",
+                    "tests1.75-1.00",
+                    "tests2.00-1.00",
+                    "tests2.75-1.00",
+                    "tests3.25-1.00",
+                    "tests4.00-1.00")
+
+maxVehicle = 1
+scales = c("100.0")
+
+################
+
+link_capacities = c("750.0","1000.0","1250.0")
+link_lengths = c("1000.0")
+simulationNames = c("testsUpstream10K.50-1.00",
+                    "testsUpstream10K1.00-1.00",
+                    "testsUpstream10K1.50-1.00",
+                    "testsUpstream10K2.00-1.00",
+                    "testsUpstream10K2.50-1.00",
+                    "testsUpstream10K3.00-1.00")
+
+maxVehicle = 1
+scales = c("100.0")
+
+################
 
 source("c:/code/matsimScaling/trafficFlowModel/analyzeTrafficFlowSimpleModel.R")
 
@@ -29,7 +92,7 @@ for (simulationName in simulationNames){
   for (link_length in link_lengths){
     for (capacity in link_capacities){
       folder = paste("C=",capacity,"/L=",link_length,"/",sep = "")
-      run_data = try(analyzeLenght(folder,simulationName, as.numeric(link_length),60,maxVehicle, scales))
+      run_data = try(analyzeLenght(folder,simulationName, as.numeric(link_length),60*24,maxVehicle, scales))
       # tt_ref = (run_data %>% filter(scale == 100) %>% select(tt))$tt
       # run_data$tt_ref = tt_ref
       # speed_ref = (run_data %>% filter(scale == 100) %>% select(speed))$speed
@@ -81,7 +144,7 @@ for (simulationName in simulationNames){
     filter(as.numeric(time_interval) > 10) %>%
     group_by(scale, length, capacity) %>%
     summarize(tt = mean(travelTime), tt_ref = mean(tt_ref), 
-              speed = mean(speed),speed_ref = mean(speed_ref))
+              speed = mean(speed),speed_ref = mean(speed_ref), count = sum(count))
   
   global_summary$length = as.numeric(global_summary$length)
   global_summary$capacity = as.numeric(global_summary$capacity)
@@ -95,20 +158,41 @@ for (simulationName in simulationNames){
   
 }
 
+#test since something is not working
+all$speed = all$length / all$tt * 3.6
+all$speed_ref = all$length / all$tt_ref * 3.6
+
+### temporary lines to aggregate different runs!
+# all$factor = 2
+# all_all = all
+
+# all$factor = 1
+# all_all = rbind(all_all, all)
+
+all$factor = 1.5
+all_all = rbind(all_all, all)
+
+
+
+write.csv(file = "c:/models/file.csv", x = all_all, row.names = F)
+
+
+#######
+
 labs = c("L = 100 m", "L = 500 m", "L = 1,000 m", "L = 5,000 m","L = 10,000 m" )
 names(labs) = c(100,500,1000,5000,10000)
 
 labs2 = c("C = 1,000 veh/h" ,"C = 1500 veh/h", "C=1600 veh/h","C=1800 veh/h", "C = 2,000 veh/h", "C = 2,500 veh/h" )
 names(labs2) = c(500,750, 800, 900, 1000,1250)
 
-all$exponent[all$exponent=="withHoles1.00"] = 1
-all$exponent[all$exponent=="withHoles.95"] = 0.95
-all$exponent[all$exponent=="withHoles.90"] = 0.90 
-all$exponent[all$exponent=="withHoles.85"] = 0.85
-all$exponent[all$exponent=="withHoles.80"] = 0.80
-all$exponent[all$exponent=="withHoles.75"] = 0.75
-all$exponent[all$exponent=="withHoles.70"] = 0.70
-all$exponent[all$exponent=="withHoles.65"] = 0.65
+all$exponent[all$exponent=="withHoles2.00-1.00"] = 1
+all$exponent[all$exponent=="withHoles2.00-.95"] = 0.95
+all$exponent[all$exponent=="withHoles2.00-.90"] = 0.90 
+all$exponent[all$exponent=="withHoles2.00-.85"] = 0.85
+all$exponent[all$exponent=="withHoles2.00-.80"] = 0.80
+all$exponent[all$exponent=="withHoles2.00-.75"] = 0.75
+all$exponent[all$exponent=="withHoles2.00-.70"] = 0.70
+all$exponent[all$exponent=="withHoles2.00-.65"] = 0.65
 
 
 ggplot(all, aes(x=scale, y= tt/tt_ref*100, color = as.factor(exponent), group = as.factor(exponent))) +
@@ -136,10 +220,12 @@ ggplot(all, aes(x=scale, y= length / tt*3.6, color = as.factor(exponent), group 
 
 ggplot(all, aes(x=scale, y= speed/speed_ref*100,
                            color = as.factor(exponent), group = as.factor(exponent))) +
-  geom_point(size = 2) +
+  geom_hline(yintercept = 100, size = 1) + 
   geom_path(size = 1) + 
+  geom_point(shape = 21, size = 3, fill = "white") +
   facet_grid(capacity~length, labeller = labeller(length = labs, capacity = labs2)) +
   xlab("Scaling factor (%) (log-scale)") + 
   ylab("Relative error of speed \n respect of 100% simulation (%)") +
   theme_bw() + theme(legend.position = "bottom") + labs(color = "Link capacity (veh/h)") + 
-  geom_hline(yintercept = 100, size = 1)
+  
+  scale_color_brewer(palette = "Paired")

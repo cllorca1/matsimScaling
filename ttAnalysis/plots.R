@@ -29,7 +29,7 @@ ggplot(data %>% filter(it == 50, network == "coarse"), aes(x=100*scale, y=tt/60,
 
 ggplot(data %>% filter(storEcp == 0.75, network == "coarse"), aes(x=100*scale, y=tt/60,
                                                            size = as.factor(it))) + 
-  scale_size_manual(values= c(.5,.75,1,1.5,3)) + 
+  scale_size_manual(values= c(.01,.75,1.5,2,3)) + 
   geom_path() +
   geom_point(shape = 21, size = 3, fill = "white") +
   ylab("Average travel (min)") + xlab("Scale factor (%)") + 

@@ -1,6 +1,7 @@
 library(ggplot2)
 library(dplyr)
 library(chron)
+library(data.table)
 
 
 setwd("C:/projects/MATSim/scaling/analysis/scoring")
@@ -10,7 +11,7 @@ folder = "c:/projects/scaling_matsim_data/matsim_outputs/1.000.75"
 
 
 scalingVector = c("0.01","0.05","0.10", "0.20", "0.50", "1.00")
-iterationsVector = c("50","100","200")
+iterationsVector = c("50","100","200", "300", "500")
 
 allData = data.frame()
 for (scaling in scalingVector){
@@ -86,18 +87,16 @@ allData = rbind(allData, allDataFull)
 allData$group = as.factor(paste(allData$scalingFactor,allData$iterations,sep = "-"))
 allData$iterations = as.factor(as.numeric(allData$iterations))
 
-labs = c("50 iterations", "100 iterations", "200 iterations")
-names(labs) = c(50,100,200)
+labs = c("50 iterations", "100 iterations", "200 iterations", "300 iterations", "500 iterations")
+names(labs) = c(50,100,200,300,500)
 
 allData = allData %>%
   rowwise() %>% 
-  mutate(iterationRuntime = as.chron.ITime(iteration)*3600*24)
+  mutate(iterationRuntime = as.ITime(as.character(iteration)))
 
 summary = allData %>%
   group_by(group, network, iterations, scalingFactor) %>%
   summarize(runtime = sum(iterationRuntime)/3600)
-
-summary = summary %>% filter(iterations != 100)
 
 
 ggplot(summary %>% filter(iterations == 50), aes(x=as.numeric(scalingFactor)* 100, y=runtime,
@@ -110,9 +109,9 @@ ggplot(summary %>% filter(iterations == 50), aes(x=as.numeric(scalingFactor)* 10
   ylab("Runtime (h)") + 
   labs(color = "Scaling factor (%)") + 
   theme(legend.position = "bottom") + 
-  labs(group = "Network", linetype = "Network") + ylim(0,80)
+  labs(group = "Network", linetype = "Network") + ylim(0,200)
 
-ggplot(summary %>% filter(network == "coarse"), aes(x=as.numeric(scalingFactor)* 100, y=runtime,
+ggplot(summary %>% filter(network == "coarse", iterations != 100), aes(x=as.numeric(scalingFactor)* 100, y=runtime,
                                                     group = as.factor(iterations),
                                                  size = as.factor(iterations))) +
   geom_path() + 
@@ -123,5 +122,5 @@ ggplot(summary %>% filter(network == "coarse"), aes(x=as.numeric(scalingFactor)*
   ylab("Runtime (h)") + 
   labs(color = "Scaling factor (%)") + 
   theme(legend.position = "bottom") + 
-  labs(group = "Iterations", size = "Iterations")
+  labs(group = "Iterations", size = "Iterations") + ylim(0,200)
   

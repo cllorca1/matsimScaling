@@ -71,7 +71,9 @@ ggplot(melted, aes(x=time, y=value/as.numeric(scale), color = as.factor(scale)))
   labs(color = "Scale factor") + ylab("Frequency (#trips)") + 
   xlab("travel time (min)")
 
-ggplot(melted %>% filter(scale == "1.00" | scale == "0.05"), aes(x=time, y=value/as.numeric(scale), color = as.factor(scale))) +
+ggplot(melted %>% filter(scale == "1.00" | scale == "0.05"), aes(x=time,
+                                                                 y=value/as.numeric(scale), 
+                                                                 color = as.factor(100*as.numeric(scale)))) +
   geom_line(size = 1) +
   geom_point(shape = 21, size = 3, fill = "white") +
   facet_grid (.~ iterations, labeller = labeller(iterations = it_labs)) + 

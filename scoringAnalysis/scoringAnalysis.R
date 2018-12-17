@@ -44,7 +44,12 @@ allData$iterations = as.factor(as.numeric(allData$iterations))
 labs = c("50 iterations", "100 iterations", "200 iterations", "300 iterations", "500 iterations")
 names(labs) = c(50,100,200, 300,500)
 
-ggplot(allData %>% filter(iterations != "300", iterations != "500"), aes(x=ITERATION, y=avg..AVG,
+
+
+
+
+
+ggplot(allData, aes(x=ITERATION, y=avg..AVG,
                     group = group,
                     color = as.factor(100*as.numeric(scalingFactor)))) +
   geom_line(size = 1)+
@@ -53,7 +58,7 @@ ggplot(allData %>% filter(iterations != "300", iterations != "500"), aes(x=ITERA
   ylab("Average MATSim plan score (points)") + 
   labs(color = "Scaling factor (%)") + 
   scale_color_manual(values= c("red", "pink", "blue", "lightblue","green4","darkgray")) +
-  facet_grid(.~iterations, scale = "free_y", labeller = labeller(iterations= labs)) + 
+  facet_grid(iterations~.,  labeller = labeller(iterations= labs)) +  
   theme(legend.position = "bottom")
 
 ggplot(allData %>% filter(scalingFactor == "0.05"
@@ -62,10 +67,10 @@ ggplot(allData %>% filter(scalingFactor == "0.05"
   geom_line(size = 1)+
   theme_bw()+
   xlab("Iteration")+
-  ylab("Average MATSim plan score (points)") + 
+  ylab("Average MATSim plan \n score (points)") + 
   labs(color = "Scaling factor (%)") + 
   scale_color_manual(values= c("pink","darkgray")) +
-  facet_grid(.~iterations, scale = "free_y", labeller = labeller(iterations= labs)) + 
+  facet_grid(.~iterations, labeller = labeller(iterations= labs)) + 
   theme(legend.position = "bottom")
 
   
